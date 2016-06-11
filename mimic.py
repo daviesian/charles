@@ -12,7 +12,8 @@ import utils
 # Do we want Charles to mirror or copy?
 MIRROR = True
 
-SSC32_PORT = 'COM8'
+SSC32_PORT = 'COM9'
+DYNAMIXEL_PORT = 'COM7'
 
 
 ##########################
@@ -48,15 +49,15 @@ outputs = {
     "UPPER_LIP_RIGHT": Output(18, min=1250, max=2250, default=1700, type="SSC32"),
     "UPPER_LIP_LEFT": Output(19, min=1225, max=2325, default=1950, type="SSC32", reverse=True),
     "UPPER_LIP_CENTER": Output(20, min=1125, max=1700, default=1425, type="SSC32"),
-    "SMILE_FROWN_RIGHT": Output(21, min=247, max=791, default=585, type="DYNAMIXEL", reverse=True),
-    "EE_OO": Output(22, min=310, max=511, default=448, type="DYNAMIXEL"),
-    "SMILE_FROWN_LEFT": Output(23, min=381, max=825, default=640, type="DYNAMIXEL"),
+    "SMILE_FROWN_RIGHT": Output(21, min=247, max=791, default=585, type="DYNAMIXEL", reverse=True, velocity=5),
+    "EE_OO": Output(22, min=310, max=511, default=448, type="DYNAMIXEL", velocity=5),
+    "SMILE_FROWN_LEFT": Output(23, min=381, max=825, default=640, type="DYNAMIXEL", velocity = 5),
 
     # NECK MOVEMENTS
     "TURN": Output(24, range=800, default=500, type="DYNAMIXEL"),
     "TILT": Output(25, range=800, default=663, type="DYNAMIXEL"),
     "NOD": Output(26, min=147, max=905, default=350, type="DYNAMIXEL"),
-    "JAW": Output(27, min=286, max=574, default=318, type="DYNAMIXEL"),
+    "JAW": Output(27, min=286, max=574, default=318, type="DYNAMIXEL", velocity=5),
 }
 
 ##########################
@@ -140,7 +141,7 @@ except Exception as e:
 ##########################
 
 try:
-    dyn.init_dynamixel_serial("COM4")
+    dyn.init_dynamixel_serial(DYNAMIXEL_PORT)
 
 ##########################
 ### Slowly move to default positions

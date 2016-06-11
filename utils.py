@@ -6,7 +6,7 @@ ssc = None
 
 class Output(object):
 
-    def __init__(self, id, default, type, min=None, max=None, range=None, reverse=False):
+    def __init__(self, id, default, type, min=None, max=None, range=None, reverse=False, velocity=1):
         self.id = id
 
         if range is not None:
@@ -31,13 +31,14 @@ class Output(object):
         self.default = default
         self.reverse = reverse
         self.type = type
+        self.velocity = velocity
 
     def _set_int_pos(self, int_pos, velocity=10):
         if self.type == "DYNAMIXEL":
-            dyn.update_dynamixel(self.id, int_pos, velocity)
+            dyn.update_dynamixel(self.id, int_pos, velocity*self.velocity)
         elif self.type == "SSC32":
             ssc[self.id].position = int_pos
-            ssc.commit(20)
+            ssc.commit(100)
 
     def set_float_pos(self, float_pos, velocity=10):
         if float_pos > 1:
