@@ -67,7 +67,7 @@ outputs = {
 # AU Intensity is 0-5 or 0-1
 
 inputs = {
-    "EULER_X": Input("GLOBAL", 1, center=-0.5, range=0.8), # +ve: Nod Down
+    "EULER_X": Input("GLOBAL", 1, center=0, range=0.8), # +ve: Nod Down
     "EULER_Y": Input("GLOBAL", 2, center=0, range=0.8), # +ve: Turn Right
     "EULER_Z": Input("GLOBAL", 3, center=0, range=0.8), # +ve: Tilt Left
     "INNER_BROW_RAISE": Input("AU", "AU01", min=3, max=4, expand=True),
