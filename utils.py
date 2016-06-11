@@ -81,6 +81,7 @@ class Input(object):
         self.min = min
         self.max = max
         self.expand = expand
+        self.range = range
 
     def is_available(self, input_maps):
         return self.map in input_maps

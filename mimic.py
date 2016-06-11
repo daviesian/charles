@@ -174,15 +174,18 @@ except Exception as e:
 context = zmq.Context()
 socket = context.socket(zmq.SUB)
 socket_aus = context.socket(zmq.SUB)
+socket_reset = context.socket(zmq.SUB)
 
 print("Connecting to OpenFace server...")
 socket.connect("tcp://localhost:5556")
 socket_aus.connect("tcp://localhost:5556")
+socket_reset.connect("tcp://localhost:5556")
 
 # We want all messages from the server
 socket.setsockopt_string(zmq.SUBSCRIBE, u"GLOBAL")
 socket.setsockopt_string(zmq.SUBSCRIBE, u"LOCAL")
 socket_aus.setsockopt_string(zmq.SUBSCRIBE, u"AU")
+socket_reset.setsockopt_string(zmq.SUBSCRIBE, u"RESET")
 
 
 ##########################
@@ -192,6 +195,7 @@ socket_aus.setsockopt_string(zmq.SUBSCRIBE, u"AU")
 
 incoming_msgs = Queue.Queue(2)
 incoming_aus = Queue.Queue(2)
+reset = False
 
 def get_incoming(socket, q):
     while True:
@@ -200,9 +204,15 @@ def get_incoming(socket, q):
         if not q.full():
             q.put_nowait(string)
 
+def watch_reset():
+    global reset
+    while True:
+        socket_reset.recv_string()
+        reset = True
 
 threading.Thread(target=functools.partial(get_incoming, socket, incoming_msgs)).start()
 threading.Thread(target=functools.partial(get_incoming, socket_aus, incoming_aus)).start()
+threading.Thread(target=watch_reset).start()
 
 
 
@@ -226,4 +236,9 @@ while True:
 
     for m in mappings:
         m.update(current_vals)
+
+    if reset:
+        inputs["EULER_X"].min = current_vals["GLOBAL"][1]-inputs["EULER_X"].range/2
+        inputs["EULER_X"].max = current_vals["GLOBAL"][1]+inputs["EULER_X"].range/2
+        reset = False
 
