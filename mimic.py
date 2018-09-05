@@ -10,10 +10,10 @@ from utils import *
 import utils
 
 # Do we want Charles to mirror or copy?
-MIRROR = True
+MIRROR = False
 
 SSC32_PORT = 'COM9'
-DYNAMIXEL_PORT = 'COM7'
+DYNAMIXEL_PORT = 'COM4'
 
 
 ##########################
@@ -34,7 +34,8 @@ outputs = {
     "LEFT_EYE_TURN": Output(7, default=1460, range=450, type="SSC32"),
     "UPPER_EYE_LIDS": Output(8, min=1075, max=2025, default=1665, type="SSC32"),
     "LOWER_EYE_LIDS": Output(9, min=1350, max=1950, default=1575, type="SSC32"),
-    "EYES_UP_DOWN": Output(10, min=1225, max=2200, default=1700, type="SSC32"),
+#    "EYES_UP_DOWN": Output(10, min=1225, max=2200, default=1700, type="SSC32"),
+    "EYES_UP_DOWN": Output(10, min=1225, max=1800, default=1500, type="SSC32"),
 
     # MID FACIAL MOVEMENTS
     "SQUINT_RIGHT": Output(11, min=1225, max=1600, default=1600, type="SSC32", reverse=True),
@@ -53,11 +54,13 @@ outputs = {
     "EE_OO": Output(22, min=310, max=511, default=448, type="DYNAMIXEL", velocity=5),
     "SMILE_FROWN_LEFT": Output(23, min=381, max=825, default=640, type="DYNAMIXEL", velocity = 5),
 
+
     # NECK MOVEMENTS
     "TURN": Output(24, range=800, default=500, type="DYNAMIXEL"),
     "TILT": Output(25, range=800, default=663, type="DYNAMIXEL"),
-    "NOD": Output(26, min=147, max=905, default=350, type="DYNAMIXEL"),
+    "NOD": Output(26, min=147, max=905, default=200, type="DYNAMIXEL"),
     "JAW": Output(27, min=286, max=574, default=318, type="DYNAMIXEL", velocity=5),
+#    "JAW": Output(27, min=574, max=574, default=574, type="DYNAMIXEL", velocity=5),
 }
 
 ##########################
@@ -67,7 +70,7 @@ outputs = {
 # AU Intensity is 0-5 or 0-1
 
 inputs = {
-    "EULER_X": Input("GLOBAL", 1, center=0, range=0.8), # +ve: Nod Down
+    "EULER_X": Input("GLOBAL", 1, center=-0.2, range=0.8), # -ve: Nod Down
     "EULER_Y": Input("GLOBAL", 2, center=0, range=0.8), # +ve: Turn Right
     "EULER_Z": Input("GLOBAL", 3, center=0, range=0.8), # +ve: Tilt Left
     "INNER_BROW_RAISE": Input("AU", "AU01", min=3, max=4, expand=True),
