@@ -1,0 +1,5 @@
+serial
+pyserial
+https://github.com/richard-clark/PyDynamixel/archive/master.zip
+pyssc32
+pyzmq
