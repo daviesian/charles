@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+
 import zmq
 from time import sleep
 from pydynamixel import dynamixel as dyn_raw
