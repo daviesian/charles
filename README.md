@@ -1,6 +1,8 @@
 # Charles - the animatronic head
 
-<img src="charles.jpg" style="width: 250px; float:right; margin-left:20px;">This is the Python code used to drive Charles, an animatronic head created by Hanson Robotics for the Graphics & Interaction Group in the University of Cambridge Computer Lab.  You can see him in action in [The Emotional Computer](http://www.sms.cam.ac.uk/media/1086225).
+<img src="charles.jpg" width="250" style="width: 250px; float:right; margin-left:20px;">
+
+This is the Python code used to drive Charles, an animatronic head created by Hanson Robotics for the Graphics & Interaction Group in the University of Cambridge Computer Lab.  You can see him in action in [The Emotional Computer](http://www.sms.cam.ac.uk/media/1086225).
 
 One of the key demonstrations of his abilities involves getting him to mimic the facial expressions of a human, which is why the key source file here is called `mimic.py`.  
 
