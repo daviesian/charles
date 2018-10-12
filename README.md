@@ -16,6 +16,8 @@ Charles has 26 servos to drive the various movements of his head, eyes, mouth, c
 
 The result is that two COM ports are used by the Python code; the trick (on Windows at least) is to get the right drivers installed so that both of these are recognised, and then put the appropriate COM ports into `mimic.py`.  The SSC32_PORT is for the grey serial lead coming out of Charles's back, and the DYNAMIXEL_PORT is for the USB lead coming out of the beige control box.
 
+On a Mac, you may need to install [a driver for the Prolific USB-Serial adapter](http://www.prolific.com.tw/US/ShowProduct.aspx?p_id=229&pcid=41).
+
 The control box also takes no less than three power supply connections! One is at 6v, one at 7.5v and one at 16v.
 
 ## Getting started

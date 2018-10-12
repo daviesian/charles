@@ -8,14 +8,14 @@ import threading
 import ssc32
 import functools
 
-from utils import *
+from utils import Input, Output, DirectMapping, FakeSinMapping, dyn
 import utils
 
 # Do we want Charles to mirror or copy?
 MIRROR = False
 
-SSC32_PORT = 'COM9'
-DYNAMIXEL_PORT = 'COM4'
+SSC32_PORT = '/dev/tty.usbserial'  # 'COM9' Grey serial lead
+DYNAMIXEL_PORT = '/dev/tty.usbserial-A9007E5k'  # 'COM4' Black USB lead
 
 
 ##########################
@@ -215,9 +215,17 @@ def watch_reset():
         socket_reset.recv_string()
         reset = True
 
-threading.Thread(target=functools.partial(get_incoming, socket, incoming_msgs)).start()
-threading.Thread(target=functools.partial(get_incoming, socket_aus, incoming_aus)).start()
-threading.Thread(target=watch_reset).start()
+msg_thread = threading.Thread(target=functools.partial(get_incoming, socket, incoming_msgs))
+msg_thread.daemon=True
+msg_thread.start()
+
+au_thread = threading.Thread(target=functools.partial(get_incoming, socket_aus, incoming_aus))
+au_thread.daemon=True
+au_thread.start()
+
+reset_thread = threading.Thread(target=watch_reset)
+reset_thread.daemon=True
+reset_thread.start()
 
 
 
@@ -226,18 +234,19 @@ threading.Thread(target=watch_reset).start()
 ##########################
 
 while True:
-    string = incoming_msgs.get()
+    msg_string = incoming_msgs.get()
+    msg_vals = msg_string.split()
+    current_vals[msg_vals[0]] = [float(f) for f in msg_vals[1:]]
 
-    vals = string.split()
-    current_vals[vals[0]] = [float(f) for f in vals[1:]]
-
-    string = incoming_aus.get()
-
-    vals = string.split()
-    current_vals[vals[0]] = current_vals.get(vals[0], {})
-    for f in vals[1:]:
+    au_string = incoming_aus.get()
+    au_vals = au_string.split()
+    # Make a dictionary for AUs called 'AU' if it doesn't exist
+    current_vals[au_vals[0]] = current_vals.get(au_vals[0], {})
+    for f in au_vals[1:]:
         fs = f.split(":")
-        current_vals[vals[0]][fs[0]] = float(fs[1])
+        current_vals[au_vals[0]][fs[0]] = float(fs[1])
+
+    print current_vals
 
     for m in mappings:
         m.update(current_vals)
