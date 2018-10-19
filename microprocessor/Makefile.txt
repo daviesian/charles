@@ -1,0 +1,30 @@
+CPPFLAGS=-I. -I../lib
+MCU=attiny45
+VPATH=../lib
+all: servo_signal_detect.hex
+
+servo_signal_detect.elf: servo_signal_detect.o 
+
+%.o: %.c
+	avr-gcc ${CPPFLAGS} -Os -mmcu=${MCU} -o $@ -c $^
+
+%.elf: %.o
+	avr-gcc -Os -mmcu=${MCU} -o $@ $^
+
+%.hex: %.elf
+	avr-objcopy -j .text -j .data -O ihex $^ $@
+
+%.lst: %.elf
+	avr-objdump -h -S $^ > $@
+
+clean:
+	rm -f *.{o,elf,hex,lst}
+
+
+program: servo_signal_detect.hex
+	avrdude -p t45 -P /dev/ttyUSB1 -c avrusb500 -e -U flash:w:$^
+
+fuses:
+	avrdude -p t45 -P /dev/ttyUSB1 -c avrusb500 -e -U hfuse:w:0xDF:m
+	avrdude -p t45 -P /dev/ttyUSB1 -c avrusb500 -e -U lfuse:w:0x62:m
+

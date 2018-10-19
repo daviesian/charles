@@ -2,13 +2,12 @@ import dynamixel as dyn
 import time
 import math
 
-ssc = None
-
 
 class Output(object):
 
-    def __init__(self, id, default, type, min=None, max=None, range=None, reverse=False, velocity=1):
+    def __init__(self, id, default, type, min=None, max=None, range=None, reverse=False, velocity=1, ssc=None):
         self.id = id
+        self.ssc = ssc
 
         if range is not None:
             if min is None and max is None:
@@ -38,8 +37,8 @@ class Output(object):
         if self.type == "DYNAMIXEL":
             dyn.update_dynamixel(self.id, int_pos, velocity*self.velocity)
         elif self.type == "SSC32":
-            ssc[self.id].position = int_pos
-            ssc.commit(100)
+            self.ssc[self.id].position = int_pos
+            self.ssc.commit(100)
 
     def set_float_pos(self, float_pos, velocity=10):
         if float_pos > 1:
@@ -54,10 +53,13 @@ class Output(object):
 
         self._set_int_pos(int_pos, velocity)
 
-    def initialise(self):
+    def initialise(self, ssc=None):
         if self.type == "DYNAMIXEL":
             dyn.init_dynamixel_servo(self.id)
-
+        else:
+            if ssc is not None:
+                self.ssc = ssc
+            
         self._set_int_pos(self.default)
 
 

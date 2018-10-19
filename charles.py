@@ -69,7 +69,6 @@ class Charles:
         ssc = None
         try:
             ssc = ssc32.SSC32(SSC32_PORT, 115200, count=32)
-            utils.ssc = ssc
 
         except Exception as e:
             print "Could not initialise servos: %s" % e
@@ -88,7 +87,7 @@ class Charles:
             print "Initialising..."
 
             for o in self.outputs.values():
-                o.initialise()
+                o.initialise(ssc=ssc)
 
             for o in self.outputs.values():
                 if o.type == "DYNAMIXEL":
