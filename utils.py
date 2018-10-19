@@ -4,6 +4,7 @@ import math
 
 ssc = None
 
+
 class Output(object):
 
     def __init__(self, id, default, type, min=None, max=None, range=None, reverse=False, velocity=1):
@@ -58,7 +59,6 @@ class Output(object):
             dyn.init_dynamixel_servo(self.id)
 
         self._set_int_pos(self.default)
-
 
 
 class Input(object):
@@ -119,6 +119,7 @@ class DirectMapping(object):
                 f = 1-f
             for o in self.outputs:
                 o.set_float_pos(f, 60)
+
 
 class FakeSinMapping(object):
 

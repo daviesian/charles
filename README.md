@@ -18,7 +18,16 @@ The result is that two COM ports are used by the Python code; the trick (on Wind
 
 On a Mac, you may need to install [a driver for the Prolific USB-Serial adapter](http://www.prolific.com.tw/US/ShowProduct.aspx?p_id=229&pcid=41).
 
-The control box also takes no less than three power supply connections! One is at 6v, one at 7.5v and one at 16v.
+The power control box also takes no less than three power supply connections! 
+
+* The left-hand one is at 16V - this is the power for the larger servos, controlled using the USB2Dynamixel adapter inside the box.
+
+* The middle one is at a nominal 7.5V, but seems to register closer to 12V. This is the 'VL' power for the SSC32 controller in Charles's brain. 
+  Through a 5v voltage converter inside the power control box, it also powers a microcontroller, of which more below.
+
+* The right-hand one (6v) - This is the power for the smaller in-head servos controlled by the SSC32 board.
+
+The code needs to tel the SSC32 to turn on servo 0 at position 1000.  This doesn't actually have a servo attached; instead it sends pulses back to the microcontroller in the power control box, which, when it sees them, turns on the relay and so provides power to the other servos controlled by the SSC32.
 
 ## Getting started
 
