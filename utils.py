@@ -1,66 +1,5 @@
-import dynamixel as dyn
 import time
 import math
-
-
-class Output(object):
-
-    def __init__(self, id, default, type, min=None, max=None, range=None, reverse=False, velocity=1, ssc=None):
-        self.id = id
-        self.ssc = ssc
-
-        if range is not None:
-            if min is None and max is None:
-                min = default - range*0.5
-                max = default + range*0.5
-            elif min is not None:
-                max = min+range
-            elif max is not None:
-                min = max-range
-            else:
-                raise Exception("If range is specified, must specify zero or one of min,max.")
-        else:
-            if min is None or max is None:
-                raise Exception("If range is not specified, must specify min,max.")
-
-        if not min <= default <= max and not max <= default <= min:
-            raise Exception("Default value must be between min and max.")
-
-        self.min = min
-        self.max = max
-        self.default = default
-        self.reverse = reverse
-        self.type = type
-        self.velocity = velocity
-
-    def _set_int_pos(self, int_pos, velocity=10):
-        if self.type == "DYNAMIXEL":
-            dyn.update_dynamixel(self.id, int_pos, velocity*self.velocity)
-        elif self.type == "SSC32":
-            self.ssc[self.id].position = int_pos
-            self.ssc.commit(100)
-
-    def set_float_pos(self, float_pos, velocity=10):
-        if float_pos > 1:
-            float_pos = 1
-        elif float_pos < 0:
-            float_pos = 0
-
-        if self.reverse:
-            float_pos = 1 - float_pos
-        #print "Setting %s to %.4f" % (self.name, float_pos)
-        int_pos = int(self.min + float_pos*(self.max-self.min))
-
-        self._set_int_pos(int_pos, velocity)
-
-    def initialise(self, ssc=None):
-        if self.type == "DYNAMIXEL":
-            dyn.init_dynamixel_servo(self.id)
-        else:
-            if ssc is not None:
-                self.ssc = ssc
-            
-        self._set_int_pos(self.default)
 
 
 class Input(object):
@@ -108,6 +47,7 @@ class Input(object):
 
 
 class DirectMapping(object):
+    """ Scaled mapping from an Input to one of Charles's outputs """
 
     def __init__(self, input, outputs, reverse=False, multiplier=1):
         self.input = input

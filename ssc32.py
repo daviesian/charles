@@ -179,9 +179,9 @@ class SSC32(object):
 
     def commit(self, time=None):
         """
-        Commit servo states to comtroller
+        Commit servo states to controller
 
-        `time` — operation time ([#<n>P<pos>]T<time>)
+        `time` — operation time in ms ([#<n>P<pos>]T<time>)
         """
         cmd = ''.join([self._servos[i]._get_cmd_string()
                        for i in xrange(len(self._servos))])
