@@ -69,9 +69,13 @@ class Charles:
         ssc = None
         try:
             ssc = ssc32.SSC32(SSC32_PORT, 115200, count=32)
+            print("Testing SSC")
+            print("Firmware version: {}".format(ssc.version()))
+            print("Done")
 
         except Exception as e:
-            print "Could not initialise servos: %s" % e
+            print("Could not initialise servos: %s" % e)
+            raise
 
         ##########################
         ### Init dynamixel servos
@@ -84,7 +88,7 @@ class Charles:
         ### Slowly move to default positions
         ##########################
 
-            print "Initialising..."
+            print("Initialising...")
 
             for o in self.outputs.values():
                 o.initialise(ssc=ssc)
@@ -97,12 +101,16 @@ class Charles:
             # This enables a pulse to the microcontroller, which
             # will then turn on the relay providing servo power
             # to the SSC32.
+            print("Powering up face servos")
             ssc[0].position = 1000
-            ssc.commit(0)
-            print "Done"
+            ssc.commit(1)
+            while not ssc.is_done():
+                print("Waiting for SSC")
+                sleep(0.5)
+            print("Done")
 
         except Exception as e:
-            print e
+            print(e)
             raise
 
 
@@ -110,23 +118,40 @@ class Charles:
 def main():
     charles = Charles()
     charles.initialise()
-    sleep(3)
+    sleep(2)
+    
     print("Waking up")
     charles.outputs["NOD"].set_float_pos(0.5, 30)
     sleep(3)
+
     print("Nod")
     charles.outputs["NOD"].set_float_pos(0.0, 50)
     sleep(0.7)
     charles.outputs["NOD"].set_float_pos(0.5, 40)
     sleep(1)
+
+    print("Eye wiggle")
     charles.outputs["RIGHT_EYE_TURN"].set_float_pos(0.0, 10)
+    charles.outputs["LEFT_EYE_TURN"].set_float_pos(0.0, 10)
     sleep(1)
     charles.outputs["RIGHT_EYE_TURN"].set_float_pos(1.0, 10)
+    charles.outputs["LEFT_EYE_TURN"].set_float_pos(1.0, 10)
     sleep(1)
-    charles.outputs["INNER_BROW_LEFT"].set_float_pos(1.0)
+    charles.outputs["RIGHT_EYE_TURN"].set_float_pos(0.5, 10)
+    charles.outputs["LEFT_EYE_TURN"].set_float_pos(0.5, 10)
     sleep(1)
-    charles.outputs["INNER_BROW_LEFT"].set_float_pos(0.0)
+
+    print("Roger Moore")
+    charles.outputs["INNER_BROW_LEFT"].set_float_pos(1.0, 40)
+    charles.outputs["INNER_BROW_RIGHT"].set_float_pos(0.0, 40)
     sleep(1)
+    charles.outputs["INNER_BROW_LEFT"].set_float_pos(0.0, 20)
+    charles.outputs["INNER_BROW_RIGHT"].set_float_pos(1.0, 20)
+    sleep(1)
+    charles.outputs["INNER_BROW_RIGHT"].set_float_pos(0.5, 20)
+    charles.outputs["INNER_BROW_RIGHT"].set_float_pos(0.5, 20)
+    sleep(1)
+
     print("Enigmatic smile")
     charles.outputs["SMILE_FROWN_RIGHT"].set_float_pos(0.8, 60)
     charles.outputs["SMILE_FROWN_LEFT"].set_float_pos(0.8, 60)

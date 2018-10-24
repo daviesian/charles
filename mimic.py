@@ -168,7 +168,7 @@ while True:
     # Action units
     try:
         au_string = incoming_aus.get(timeout=0.1)
-        print au_string
+        print(au_string)
         au_vals = au_string.split()
         # Make a dictionary for AUs called 'AU' if it doesn't exist
         current_vals[au_vals[0]] = current_vals.get(au_vals[0], {})

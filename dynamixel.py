@@ -9,7 +9,6 @@ def init_dynamixel_serial(port):
     try:
         dyn_serial = dyn_raw.get_serial_for_url(port)
         dyn_serial.baudrate = 117647
-
     except Exception as e:
         print(e)
 
@@ -18,7 +17,7 @@ def init_dynamixel_servo(id):
     try:
         dyn_raw.init(dyn_serial, id, False, 1)
     except Exception as e:
-        print e
+        print(e)
 
 
 def update_dynamixel(id, val, velocity=10):
