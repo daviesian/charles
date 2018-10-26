@@ -4,7 +4,12 @@ SSC32 controlling library
 Modified from Vladimir Ermakov's library at
 https://pypi.org/project/pyssc32/0.4.1/
 """
+from __future__ import division
 
+from builtins import str
+from builtins import range
+from builtins import object
+from past.utils import old_div
 import serial
 import math
 
@@ -105,9 +110,9 @@ class Servo(object):
     def _get_cmd_string(self):
         if self.is_changed:
             self.is_changed = False
-            return '#{0}P{1}'.format(self.no, self._pos)
+            return b'#%dP%d' % (self.no, self._pos)
         else:
-            return ''
+            return b''
 
 
 class SSC32(object):
@@ -141,10 +146,10 @@ class SSC32(object):
 
         self.autocommit = autocommit
         self.ser = serial.Serial(port, baudrate, timeout=1)
-        self._servos = [Servo(self._servo_on_changed, i) for i in xrange(count)]
+        self._servos = [Servo(self._servo_on_changed, i) for i in range(count)]
 
         # for baudrate detection on Open Robotics controllers
-        self.ser.write('\r'*10)
+        self.ser.write(b'\r'*10)
         self.ser.flush()
 
         if config:
@@ -162,7 +167,7 @@ class SSC32(object):
                                                    self._servos)
 
     def __getitem__(self, it):
-        if type(it) == str or type(it) == unicode:
+        if type(it) == str:
             for servo in self._servos:
                 it = it.upper()
                 if servo.name == it:
@@ -183,11 +188,11 @@ class SSC32(object):
 
         `time` — operation time in ms ([#<n>P<pos>]T<time>)
         """
-        cmd = ''.join([self._servos[i]._get_cmd_string()
-                       for i in xrange(len(self._servos))])
+        cmd = b''.join([self._servos[i]._get_cmd_string()
+                       for i in range(len(self._servos))])
         if time is not None and cmd != '':
-            cmd += 'T{0}'.format(time)
-        cmd += '\r'
+            cmd += b'T%d' % time
+        cmd += b'\r'
         self.ser.write(cmd)
 
     def is_done(self):
@@ -248,4 +253,5 @@ class SSC32(object):
         self.ser.flush()
         self.ser.reset_input_buffer()
         self.ser.write(b'VER\r')
-        return self.ser.read(50)
+        ver = self.ser.read(50).decode('utf-8').strip()
+        return ver

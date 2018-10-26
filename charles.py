@@ -1,5 +1,7 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 
+from __future__ import print_function
+# from builtins import object
 from time import sleep
 from pydynamixel import dynamixel as dyn_raw
 import dynamixel as dyn
@@ -75,7 +77,7 @@ class SSC32Output(Output):
         self.ssc[self.id].position = int_pos
         # argument of commit is time in ms
         # Converting to something velocity-based to compare with dynamixel
-        self.ssc.commit(10000*self.velocity//velocity)
+        self.ssc.commit(10000//(velocity*self.velocity))
 
 
 class DynamixelOutput(Output):
@@ -91,7 +93,7 @@ class DynamixelOutput(Output):
         return dyn_raw.get_is_moving(dyn.dyn_serial, self.id)
 
 
-class Charles:
+class Charles(object):
 
     def __init__(self, mirror=False):
 
@@ -135,9 +137,9 @@ class Charles:
 
 
             # NECK MOVEMENTS
-            "TURN": DynamixelOutput(24, range=800, default=500),
-            "TILT": DynamixelOutput(25, range=800, default=663),
-            "NOD": DynamixelOutput(26, min=147, max=905, default=200),
+            "TURN": DynamixelOutput(24, range=800, default=500, velocity=2),
+            "TILT": DynamixelOutput(25, range=800, default=663, velocity=2),
+            "NOD": DynamixelOutput(26, min=147, max=905, default=200, velocity=3),
             "JAW": DynamixelOutput(27, min=286, max=574, default=318, velocity=5),
         }
 
@@ -169,7 +171,7 @@ class Charles:
 
             print("Initialising...")
 
-            for o in self.outputs.values():
+            for o in list(self.outputs.values()):
                 o.initialise(interface=self.ssc)
 
             # This enables a pulse to the microcontroller, which
@@ -199,7 +201,7 @@ class Charles:
             return True
 
 
-        for o in self.outputs.values():
+        for o in list(self.outputs.values()):
             if isinstance(o, DynamixelOutput) and o.is_moving():
                 return True
 
@@ -284,6 +286,27 @@ def main():
     charles.outputs["SMILE_FROWN_RIGHT"].set_float_pos(0.0, 60)
     charles.outputs["SMILE_FROWN_LEFT"].set_float_pos(0.0, 60)
     charles.wait_until_still()
+
+    print("Squint right, left, both and none")
+    charles.outputs["SQUINT_RIGHT"].set_float_pos(0.95, 60)
+    charles.outputs["SQUINT_LEFT"].set_float_pos(0.5, 60)
+    charles.wait_until_still()
+    sleep(1)
+    charles.outputs["SQUINT_RIGHT"].set_float_pos(0.5, 60)
+    charles.outputs["SQUINT_LEFT"].set_float_pos(0.95, 60)
+    charles.wait_until_still()
+    sleep(1)
+    charles.outputs["SQUINT_RIGHT"].set_float_pos(0.95, 60)
+    charles.outputs["SQUINT_LEFT"].set_float_pos(0.95, 60)
+    charles.wait_until_still()
+    sleep(1)
+    charles.outputs["SQUINT_RIGHT"].set_float_pos(0, 60)
+    charles.outputs["SQUINT_LEFT"].set_float_pos(0, 60)
+    charles.wait_until_still()
+    sleep(1)
+
+
+
 
 
 

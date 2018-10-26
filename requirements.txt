@@ -1,3 +1,4 @@
 pyserial
-https://github.com/richard-clark/PyDynamixel/archive/master.zip
+https://github.com/quentinsf/PyDynamixel/archive/master.zip
 pyzmq
+pyqt5

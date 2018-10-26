@@ -1,8 +1,13 @@
 #! /usr/bin/env python
 
+from __future__ import division
+from __future__ import print_function
+from future import standard_library
+standard_library.install_aliases()
+from past.utils import old_div
 import zmq
 from time import sleep
-import Queue
+import queue
 import threading
 import functools
 
@@ -10,7 +15,7 @@ from utils import Input, DirectMapping, FakeSinMapping
 from charles import Charles
 
 # Do we want Charles to mirror or copy?
-MIRROR = True
+MIRROR = False
 
 #######################################################
 # Set up Charles and initialise him to central position
@@ -30,20 +35,23 @@ inputs = {
     "EULER_Y": Input("GLOBAL", 2, center=0, range=0.8), # +ve: Turn Right
     "EULER_Z": Input("GLOBAL", 3, center=0, range=0.8), # +ve: Tilt Left
 
-    "INNER_BROW_RAISE": Input("AU", "AU01", min=3, max=4, expand=True),
-    #"OUTER_BROW_RAISE": Input("AU", "AU02", min=1.5, max=3),
-    #"BROW_LOWERER": Input("AU", "AU04", min=1.5, max=3),
-    "UPPER_LID_RAISER": Input("AU", "AU05", min=0.3, max=4),
-    "CHEEK_RAISER": Input("AU", "AU06", min=0, max=2),
-    "NOSE_WRINKLER": Input("AU", "AU09", min=0, max=2),
-    "UPPER_LIP_RAISER": Input("AU", "AU10", min=0, max=1),
-    #"LIP_CORNER_PULLER": Input("AU", "AU12", min=1.5, max=3),
+    "INNER_BROW_RAISE": Input("AU", "AU01", min=0, max=5, expand=True),
+    "OUTER_BROW_RAISE": Input("AU", "AU02", min=0, max=4.5),
+    "BROW_LOWERER": Input("AU", "AU04", min=0, max=2.5),
+    "UPPER_LID_RAISER": Input("AU", "AU05", min=-0.5, max=2),
+    "CHEEK_RAISER": Input("AU", "AU06", min=0, max=2.6),
+    # "LID_TIGHTENER": Input("AU", "AU07", min=0, max=5),
+    "NOSE_WRINKLER": Input("AU", "AU09", min=0, max=1.8),
+    "UPPER_LIP_RAISER": Input("AU", "AU10", min=0, max=4),
+    "LIP_CORNER_PULLER": Input("AU", "AU12", min=0, max=3.2),
+    
     #"DIMPLER": Input("AU", "AU14", min=1.5, max=3),
     #"LIP_CORNER_DEPRESSOR": Input("AU", "AU15", min=1.5, max=3),
     #"CHIN_RAISER": Input("AU", "AU17", min=1.5, max=3),
-    #"LIP_STRETCHER": Input("AU", "AU20", min=1.5, max=3),
+    "LIP_STRETCHER": Input("AU", "AU20", min=1.5, max=3),
+    #"LIP_TIGHTENER": Input("AU", "AU23", min=0, max=3),
     #"LIPS_PART": Input("AU", "AU25", min=1.5, max=3),
-    "JAW_DROP": Input("AU", "AU26", min=0.5, max=1.5),
+    "JAW_DROP": Input("AU", "AU26", min=0.1, max=2.6),
     #"BLINK": Input("AU", "AU45", min=0, max=1),
 }
 
@@ -64,7 +72,7 @@ mappings = [
                                       outputs["RIGHT_EYE_TURN"]], reverse=not MIRROR),
     DirectMapping(inputs["EULER_Z"], [outputs["TILT"]], reverse=not MIRROR),
 
-    # DirectMapping(inputs["UPPER_LID_RAISER"], [outputs["UPPER_EYE_LIDS"]]),
+    DirectMapping(inputs["UPPER_LID_RAISER"], [outputs["UPPER_EYE_LIDS"]]),
 
     # Brows
 
@@ -77,7 +85,7 @@ mappings = [
     # Mid face
 
     DirectMapping(inputs["CHEEK_RAISER"], [outputs["SQUINT_RIGHT"], outputs["SQUINT_LEFT"]]),
-    DirectMapping(inputs["NOSE_WRINKLER"], [outputs["SNEER_RIGHT"], outputs["SNEER_LEFT"]]),
+    DirectMapping(inputs["NOSE_WRINKLER"], [outputs["CENTER_BROW"], outputs["SNEER_RIGHT"], outputs["SNEER_LEFT"]]),
 
     # Mouth
 
@@ -117,8 +125,8 @@ socket_reset.setsockopt_string(zmq.SUBSCRIBE, u"RESET")
 ##########################################################
 
 
-incoming_msgs = Queue.Queue(2)
-incoming_aus = Queue.Queue(2)
+incoming_msgs = queue.Queue(2)
+incoming_aus = queue.Queue(2)
 reset = False
 
 def get_incoming(socket, q):
@@ -161,7 +169,7 @@ while True:
         msg_vals = msg_string.split()
         current_vals[msg_vals[0]] = [float(f) for f in msg_vals[1:]]
         updated = True
-    except Queue.Empty:
+    except queue.Empty:
         print("Empty msgs")
         pass
 
@@ -176,7 +184,7 @@ while True:
             fs = f.split(":")
             current_vals[au_vals[0]][fs[0]] = float(fs[1])
         updated = True
-    except Queue.Empty:
+    except queue.Empty:
         print("Empty AUs")
         pass
 

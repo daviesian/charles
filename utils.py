@@ -60,7 +60,7 @@ class DirectMapping(object):
             if self.reverse:
                 f = 1-f
             for o in self.outputs:
-                o.set_float_pos(f, 60)
+                o.set_float_pos(f, 30)
 
 
 class FakeSinMapping(object):
