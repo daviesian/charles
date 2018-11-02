@@ -54,13 +54,13 @@ class DirectMapping(object):
         self.outputs = outputs
         self.reverse = reverse
 
-    def update(self, input_maps):
+    def update(self, input_maps, velocity=25):
         if self.input.is_available(input_maps):
             f = self.input.get_float(input_maps)
             if self.reverse:
                 f = 1-f
             for o in self.outputs:
-                o.set_float_pos(f, 30)
+                o.set_float_pos(f, velocity)
 
 
 class FakeSinMapping(object):

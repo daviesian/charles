@@ -73,7 +73,7 @@ class SSC32Output(Output):
         super(SSC32Output, self).initialise(interface)
 
     def _set_int_pos(self, int_pos, velocity=10):
-        """Velocity currently ignored for SSC"""
+        """Velocity not very well tested for SSC"""
         self.ssc[self.id].position = int_pos
         # argument of commit is time in ms
         # Converting to something velocity-based to compare with dynamixel
@@ -87,7 +87,9 @@ class DynamixelOutput(Output):
         super(DynamixelOutput, self).initialise(interface)
 
     def _set_int_pos(self, int_pos, velocity=10):
+        """ Move to position in range 0-1023 """
         dyn.update_dynamixel(self.id, int_pos, velocity*self.velocity)
+        # print("Dynamixel {} set to {}".format(self.id, int_pos))
 
     def is_moving(self):
         return dyn_raw.get_is_moving(dyn.dyn_serial, self.id)

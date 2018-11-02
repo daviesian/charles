@@ -8,6 +8,7 @@ from past.utils import old_div
 import zmq
 from time import sleep
 import queue
+import sys
 import threading
 import functools
 
@@ -88,7 +89,7 @@ mappings = [
     DirectMapping(inputs["NOSE_WRINKLER"], [outputs["CENTER_BROW"], outputs["SNEER_RIGHT"], outputs["SNEER_LEFT"]]),
 
     # Mouth
-
+    DirectMapping(inputs["LIP_CORNER_PULLER"], [outputs["EE_OO"]]),
     DirectMapping(inputs["UPPER_LIP_RAISER"], [outputs["UPPER_LIP_LEFT"],
                                                outputs["UPPER_LIP_CENTER"],
                                                outputs["UPPER_LIP_RIGHT"],
@@ -160,6 +161,12 @@ reset_thread.start()
 ### Mimic forever.
 ##########################
 
+# How fast should he try to react?
+# You can give a velocity as a parameter if wanted.
+velocity=25
+if len(sys.argv) > 1:
+    velocity = int(sys.argv[1])
+
 current_vals = {}
 while True:
     updated = False
@@ -176,7 +183,7 @@ while True:
     # Action units
     try:
         au_string = incoming_aus.get(timeout=0.1)
-        print(au_string)
+        # print(au_string)
         au_vals = au_string.split()
         # Make a dictionary for AUs called 'AU' if it doesn't exist
         current_vals[au_vals[0]] = current_vals.get(au_vals[0], {})
@@ -190,7 +197,7 @@ while True:
 
     if updated:
         for m in mappings:
-            m.update(current_vals)
+            m.update(current_vals, velocity)
 
     if reset:
         inputs["EULER_X"].min = current_vals["GLOBAL"][1]-inputs["EULER_X"].range/2

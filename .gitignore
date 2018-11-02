@@ -4,3 +4,4 @@ env
 .env
 .venv
 .vscode
+.ipynb_checkpoints
