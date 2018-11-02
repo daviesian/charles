@@ -61,8 +61,12 @@ Once you have the software, the sequence for getting going on a new machine is r
 
 You can run 'charles.py' and you should see some basic movements.  If you have the jupyter notebook system installed, there's also a CharlesPlay notebook here which will let you control individual servos.
 
-To get Charles to mimic you, you need FaceLandmarkVidZmq, which you may need to build for your platform. (See the standard OpenFace instructions.) Then:
+To get Charles to mimic you, you need FaceLandmarkVidZmq, which you may need to build for your platform. (See the standard instructions on the OpenFace wiki.) Then:
 
-* Run FaceLandmarkVidZmq, e.g. with `FaceLandmarkVidZmq -device 0`, and check it is tracking your face through the camera
+* Run FaceLandmarkVidZmq, e.g. with `FaceLandmarkVidZmq -device 0`, and check it is tracking your face through the camera.
 * Run `mimic.py` and Charles should start to respond.
+
+*Quentin Stafford-Fraser*  
+*qs101@cl.cam.ac.uk*  
+*Oct 2018*  
 
