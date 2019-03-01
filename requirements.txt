@@ -1,3 +1,4 @@
+future
 pyserial
 https://github.com/quentinsf/PyDynamixel/archive/master.zip
 pyzmq

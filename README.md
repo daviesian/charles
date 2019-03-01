@@ -19,7 +19,9 @@ The result is that two serial ports are used by the Python code; the trick (on W
 
 On Windows, you'll need to get the right COM port numbers.
 
-On a Mac, you may need to install [a driver for the Prolific USB-Serial adapter](http://www.prolific.com.tw/US/ShowProduct.aspx?p_id=229&pcid=41), and the serial ports will then typically appear as /dev/cu.* or /dev/tty* devices.  Linux should be much the same.
+On a Mac, you may need to install [a driver for the Prolific USB-Serial adapter](http://www.prolific.com.tw/US/ShowProduct.aspx?p_id=229&pcid=41), and possibly [an FTDI driver](https://www.ftdichip.com/Drivers/VCP.htm) and you may need to reboot once or twice and grant them access in the security bit of system preferences.
+
+The serial ports will then typically appear as /dev/cu.* or /dev/tty* devices.  Linux should be much the same.
 
 The power control box also takes no less than three power supply connections! 
 
