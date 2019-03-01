@@ -16,7 +16,7 @@ from utils import Input, DirectMapping, FakeSinMapping
 from charles import Charles
 
 # Do we want Charles to mirror or copy?
-MIRROR = False
+MIRROR = True
 
 #######################################################
 # Set up Charles and initialise him to central position
@@ -39,7 +39,7 @@ inputs = {
     "INNER_BROW_RAISE": Input("AU", "AU01", min=0, max=5, expand=True),
     "OUTER_BROW_RAISE": Input("AU", "AU02", min=0, max=4.5),
     "BROW_LOWERER": Input("AU", "AU04", min=0, max=2.5),
-    "UPPER_LID_RAISER": Input("AU", "AU05", min=-0.5, max=2),
+    "UPPER_LID_RAISER": Input("AU", "AU05", min=-0.5, max=1.4),
     "CHEEK_RAISER": Input("AU", "AU06", min=0, max=2.6),
     # "LID_TIGHTENER": Input("AU", "AU07", min=0, max=5),
     "NOSE_WRINKLER": Input("AU", "AU09", min=0, max=1.8),
@@ -74,6 +74,8 @@ mappings = [
     DirectMapping(inputs["EULER_Z"], [outputs["TILT"]], reverse=not MIRROR),
 
     DirectMapping(inputs["UPPER_LID_RAISER"], [outputs["UPPER_EYE_LIDS"]]),
+    DirectMapping(inputs["UPPER_LID_RAISER"], [outputs["LOWER_EYE_LIDS"]], 
+                  reverse=True),
 
     # Brows
 
@@ -163,7 +165,7 @@ reset_thread.start()
 
 # How fast should he try to react?
 # You can give a velocity as a parameter if wanted.
-velocity=25
+velocity=20
 if len(sys.argv) > 1:
     velocity = int(sys.argv[1])
 

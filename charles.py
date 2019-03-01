@@ -115,8 +115,8 @@ class Charles(object):
             # EYE MOVEMENTS
             "RIGHT_EYE_TURN": SSC32Output(6, default=1560, range=500),
             "LEFT_EYE_TURN": SSC32Output(7, default=1460, range=450),
-            "UPPER_EYE_LIDS": SSC32Output(8, min=1075, max=2025, default=1665),
-            "LOWER_EYE_LIDS": SSC32Output(9, min=1350, max=1950, default=1575),
+            "UPPER_EYE_LIDS": SSC32Output(8, min=1080, max=1900, default=1595),
+            "LOWER_EYE_LIDS": SSC32Output(9, min=1380, max=1890, default=1590),
         #   SSC32 "EYES_UP_DOWN": Output(10, min=1225, max=2200, default=1700),
             "EYES_UP_DOWN": SSC32Output(10, min=1225, max=1800, default=1500),
 
