@@ -142,7 +142,7 @@ class Charles(object):
             "TURN": DynamixelOutput(24, range=800, default=500, velocity=2),
             "TILT": DynamixelOutput(25, range=800, default=663, velocity=2),
             "NOD": DynamixelOutput(26, min=147, max=905, default=200, velocity=3),
-            "JAW": DynamixelOutput(27, min=286, max=574, default=318, velocity=5),
+            "JAW": DynamixelOutput(27, min=286, max=574, default=318, velocity=7),
         }
 
     def initialise(self):
@@ -307,6 +307,28 @@ def main():
     charles.wait_until_still()
     sleep(1)
 
+    print("Lip movements")
+    charles.outputs["UPPER_LIP_RIGHT"].set_float_pos(0.9, 60)
+    charles.outputs["UPPER_LIP_CENTER"].set_float_pos(0.8, 60)
+    charles.outputs["UPPER_LIP_LEFT"].set_float_pos(0.9, 60)
+    charles.outputs["LOWER_LIP_RIGHT"].set_float_pos(0.8, 60)
+    charles.outputs["LOWER_LIP_CENTER"].set_float_pos(0.9, 60)
+    charles.outputs["LOWER_LIP_LEFT"].set_float_pos(0.8, 60)
+    
+    charles.wait_until_still()
+    sleep(1)
+    charles.outputs["UPPER_LIP_CENTER"].set_float_pos(0.3, 60)
+    charles.wait_until_still()
+    sleep(1)
+
+    charles.outputs["UPPER_LIP_RIGHT"].set_float_pos(0.5, 60)
+    charles.outputs["UPPER_LIP_CENTER"].set_float_pos(0.5, 60)
+    charles.outputs["UPPER_LIP_LEFT"].set_float_pos(0.5, 60)
+    charles.outputs["LOWER_LIP_RIGHT"].set_float_pos(0.5, 60)
+    charles.outputs["LOWER_LIP_CENTER"].set_float_pos(0.5, 60)
+    charles.outputs["LOWER_LIP_LEFT"].set_float_pos(0.5, 60)
+    charles.wait_until_still()
+    sleep(1)
 
 
 
