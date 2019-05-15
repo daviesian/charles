@@ -3,6 +3,7 @@
 from __future__ import division
 from __future__ import print_function
 from future import standard_library
+
 standard_library.install_aliases()
 from past.utils import old_div
 import zmq
@@ -32,10 +33,9 @@ charles.initialise()
 # AU Intensity is 0-5 or 0-1
 
 inputs = {
-    "EULER_X": Input("GLOBAL", 1, center=-0.2, range=0.8), # -ve: Nod Down
-    "EULER_Y": Input("GLOBAL", 2, center=0, range=0.8), # +ve: Turn Right
-    "EULER_Z": Input("GLOBAL", 3, center=0, range=0.8), # +ve: Tilt Left
-
+    "EULER_X": Input("GLOBAL", 1, center=-0.2, range=0.8),  # -ve: Nod Down
+    "EULER_Y": Input("GLOBAL", 2, center=0, range=0.8),  # +ve: Turn Right
+    "EULER_Z": Input("GLOBAL", 3, center=0, range=0.8),  # +ve: Tilt Left
     "INNER_BROW_RAISE": Input("AU", "AU01", min=0, max=5, expand=True),
     "OUTER_BROW_RAISE": Input("AU", "AU02", min=0, max=4.5),
     "BROW_LOWERER": Input("AU", "AU04", min=0, max=2.5),
@@ -45,15 +45,14 @@ inputs = {
     "NOSE_WRINKLER": Input("AU", "AU09", min=0, max=1.8),
     "UPPER_LIP_RAISER": Input("AU", "AU10", min=0, max=4),
     "LIP_CORNER_PULLER": Input("AU", "AU12", min=0, max=3.2),
-    
-    #"DIMPLER": Input("AU", "AU14", min=1.5, max=3),
-    #"LIP_CORNER_DEPRESSOR": Input("AU", "AU15", min=1.5, max=3),
-    #"CHIN_RAISER": Input("AU", "AU17", min=1.5, max=3),
+    # "DIMPLER": Input("AU", "AU14", min=1.5, max=3),
+    # "LIP_CORNER_DEPRESSOR": Input("AU", "AU15", min=1.5, max=3),
+    # "CHIN_RAISER": Input("AU", "AU17", min=1.5, max=3),
     "LIP_STRETCHER": Input("AU", "AU20", min=1.5, max=3),
-    #"LIP_TIGHTENER": Input("AU", "AU23", min=0, max=3),
-    #"LIPS_PART": Input("AU", "AU25", min=1.5, max=3),
+    # "LIP_TIGHTENER": Input("AU", "AU23", min=0, max=3),
+    # "LIPS_PART": Input("AU", "AU25", min=1.5, max=3),
     "JAW_DROP": Input("AU", "AU26", min=0.1, max=2.6),
-    #"BLINK": Input("AU", "AU45", min=0, max=1),
+    # "BLINK": Input("AU", "AU45", min=0, max=1),
 }
 
 ##########################################
@@ -64,39 +63,42 @@ inputs = {
 outputs = charles.outputs
 
 mappings = [
-
     # Head pose and eyes
-
     DirectMapping(inputs["EULER_X"], [outputs["NOD"], outputs["EYES_UP_DOWN"]], reverse=True),
-    DirectMapping(inputs["EULER_Y"], [outputs["TURN"],
-                                      outputs["LEFT_EYE_TURN"],
-                                      outputs["RIGHT_EYE_TURN"]], reverse=not MIRROR),
+    DirectMapping(
+        inputs["EULER_Y"], [outputs["TURN"], outputs["LEFT_EYE_TURN"], outputs["RIGHT_EYE_TURN"]], 
+        reverse=not MIRROR
+    ),
     DirectMapping(inputs["EULER_Z"], [outputs["TILT"]], reverse=not MIRROR),
-
     DirectMapping(inputs["UPPER_LID_RAISER"], [outputs["UPPER_EYE_LIDS"]]),
-    DirectMapping(inputs["UPPER_LID_RAISER"], [outputs["LOWER_EYE_LIDS"]], 
-                  reverse=True),
-
+    DirectMapping(inputs["UPPER_LID_RAISER"], [outputs["LOWER_EYE_LIDS"]], reverse=True),
     # Brows
-
-    DirectMapping(inputs["INNER_BROW_RAISE"], [outputs["CENTER_BROW"],
-                                               outputs["INNER_BROW_LEFT"],
-                                               outputs["OUTER_BROW_LEFT"],
-                                               outputs["INNER_BROW_RIGHT"],
-                                               outputs["OUTER_BROW_RIGHT"]], reverse=True),
-
+    DirectMapping(
+        inputs["INNER_BROW_RAISE"],
+        [
+            outputs["CENTER_BROW"],
+            outputs["INNER_BROW_LEFT"],
+            outputs["OUTER_BROW_LEFT"],
+            outputs["INNER_BROW_RIGHT"],
+            outputs["OUTER_BROW_RIGHT"],
+        ],
+        reverse=True,
+    ),
     # Mid face
-
     DirectMapping(inputs["CHEEK_RAISER"], [outputs["SQUINT_RIGHT"], outputs["SQUINT_LEFT"]]),
     DirectMapping(inputs["NOSE_WRINKLER"], [outputs["CENTER_BROW"], outputs["SNEER_RIGHT"], outputs["SNEER_LEFT"]]),
-
     # Mouth
     DirectMapping(inputs["LIP_CORNER_PULLER"], [outputs["EE_OO"]]),
-    DirectMapping(inputs["UPPER_LIP_RAISER"], [outputs["UPPER_LIP_LEFT"],
-                                               outputs["UPPER_LIP_CENTER"],
-                                               outputs["UPPER_LIP_RIGHT"],
-                                               outputs["SMILE_FROWN_RIGHT"],
-                                               outputs["SMILE_FROWN_LEFT"]]),
+    DirectMapping(
+        inputs["UPPER_LIP_RAISER"],
+        [
+            outputs["UPPER_LIP_LEFT"],
+            outputs["UPPER_LIP_CENTER"],
+            outputs["UPPER_LIP_RIGHT"],
+            outputs["SMILE_FROWN_RIGHT"],
+            outputs["SMILE_FROWN_LEFT"],
+        ],
+    ),
     DirectMapping(inputs["JAW_DROP"], [outputs["JAW"]]),
 ]
 
@@ -132,6 +134,7 @@ incoming_msgs = queue.Queue(2)
 incoming_aus = queue.Queue(2)
 reset = False
 
+
 def get_incoming(socket, q):
     while True:
         string = socket.recv_string()
@@ -139,24 +142,25 @@ def get_incoming(socket, q):
         if not q.full():
             q.put_nowait(string)
 
+
 def watch_reset():
     global reset
     while True:
         socket_reset.recv_string()
         reset = True
 
+
 msg_thread = threading.Thread(target=functools.partial(get_incoming, socket, incoming_msgs))
-msg_thread.daemon=True
+msg_thread.daemon = True
 msg_thread.start()
 
 au_thread = threading.Thread(target=functools.partial(get_incoming, socket_aus, incoming_aus))
-au_thread.daemon=True
+au_thread.daemon = True
 au_thread.start()
 
 reset_thread = threading.Thread(target=watch_reset)
-reset_thread.daemon=True
+reset_thread.daemon = True
 reset_thread.start()
-
 
 
 ##########################
@@ -165,7 +169,7 @@ reset_thread.start()
 
 # How fast should he try to react?
 # You can give a velocity as a parameter if wanted.
-velocity=20
+velocity = 20
 if len(sys.argv) > 1:
     velocity = int(sys.argv[1])
 
@@ -202,7 +206,7 @@ while True:
             m.update(current_vals, velocity)
 
     if reset:
-        inputs["EULER_X"].min = current_vals["GLOBAL"][1]-inputs["EULER_X"].range/2
-        inputs["EULER_X"].max = current_vals["GLOBAL"][1]+inputs["EULER_X"].range/2
+        inputs["EULER_X"].min = current_vals["GLOBAL"][1] - inputs["EULER_X"].range / 2
+        inputs["EULER_X"].max = current_vals["GLOBAL"][1] + inputs["EULER_X"].range / 2
         reset = False
 
