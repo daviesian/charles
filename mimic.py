@@ -4,6 +4,8 @@ from __future__ import division
 from __future__ import print_function
 from future import standard_library
 
+from typing import Dict, List, Optional, TypeVar, Union
+
 standard_library.install_aliases()
 from past.utils import old_div
 import zmq
@@ -32,7 +34,7 @@ charles.initialise()
 
 # AU Intensity is 0-5 or 0-1
 
-inputs = {
+inputs: Dict[str, Input] = {
     "EULER_X": Input("GLOBAL", 1, center=-0.2, range=0.8),  # -ve: Nod Down
     "EULER_Y": Input("GLOBAL", 2, center=0, range=0.8),  # +ve: Turn Right
     "EULER_Z": Input("GLOBAL", 3, center=0, range=0.8),  # +ve: Tilt Left
@@ -130,8 +132,8 @@ socket_reset.setsockopt_string(zmq.SUBSCRIBE, u"RESET")
 ##########################################################
 
 
-incoming_msgs = queue.Queue(2)
-incoming_aus = queue.Queue(2)
+incoming_msgs: queue.Queue = queue.Queue(2)
+incoming_aus: queue.Queue = queue.Queue(2)
 reset = False
 
 
@@ -173,7 +175,15 @@ velocity = 20
 if len(sys.argv) > 1:
     velocity = int(sys.argv[1])
 
-current_vals = {}
+# Values consist of GLOBAL values (lists of floats)
+# and AU values (dicts mapping AU names to floats)
+# They are packed into a dict indexed by 'GLOBAL' or 'AU'.
+# This is rather messy!  But let's see if we can type-check it.
+
+ValList = Union[List[float], Dict[str, float]]
+ValMap = Dict[str, ValList]
+
+current_vals: ValMap = {}
 while True:
     updated = False
     # Global messages first

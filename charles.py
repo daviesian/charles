@@ -1,6 +1,7 @@
 #! /usr/bin/env python3
 
 from __future__ import print_function
+from typing import Optional, Dict
 
 # from builtins import object
 from time import sleep
@@ -18,14 +19,24 @@ DYNAMIXEL_PORT = "/dev/tty.usbserial-A9007E5k"  # 'COM4' Black USB lead
 
 
 class Output(object):
-    def __init__(self, id, default, min=None, max=None, range=None, reverse=False, velocity=1, ssc=None):
+    def __init__(
+        self,
+        id,
+        default: int,
+        min: Optional[int] = None,
+        max: Optional[int] = None,
+        range: Optional[int] = None,
+        reverse: bool = False,
+        velocity: int = 1,
+        ssc: Optional[str] = None,
+    ):
         self.id = id
         self.ssc = ssc
 
         if range is not None:
             if min is None and max is None:
-                min = default - range * 0.5
-                max = default + range * 0.5
+                min = default - range // 2
+                max = default + range // 2
             elif min is not None:
                 max = min + range
             elif max is not None:
@@ -45,11 +56,11 @@ class Output(object):
         self.reverse = reverse
         self.velocity = velocity
 
-    def _set_int_pos(self, int_pos, velocity=10):
+    def _set_int_pos(self, int_pos: int, velocity: int = 10):
         # Needs to be implemented by subclass
         raise NotImplementedError()
 
-    def set_float_pos(self, float_pos, velocity=10):
+    def set_float_pos(self, float_pos: float, velocity: int = 10):
         if float_pos > 1:
             float_pos = 1
         elif float_pos < 0:
@@ -62,12 +73,12 @@ class Output(object):
 
         self._set_int_pos(int_pos, velocity)
 
-    def initialise(self, interface=None):
+    def initialise(self, interface: Optional[str]):
         self._set_int_pos(self.default)
 
 
 class SSC32Output(Output):
-    def initialise(self, interface=None):
+    def initialise(self, interface: Optional[str]):
         self.ssc = interface
         super(SSC32Output, self).initialise(interface)
 
@@ -80,27 +91,27 @@ class SSC32Output(Output):
 
 
 class DynamixelOutput(Output):
-    def initialise(self, interface=None):
+    def initialise(self, interface: Optional[str]):
         dyn.init_dynamixel_servo(self.id)
         super(DynamixelOutput, self).initialise(interface)
 
-    def _set_int_pos(self, int_pos, velocity=10):
+    def _set_int_pos(self, int_pos: int, velocity: int = 10):
         """ Move to position in range 0-1023 """
         dyn.update_dynamixel(self.id, int_pos, velocity * self.velocity)
         # print("Dynamixel {} set to {}".format(self.id, int_pos))
 
-    def is_moving(self):
+    def is_moving(self) -> bool:
         return dyn_raw.get_is_moving(dyn.dyn_serial, self.id)
 
 
 class Charles(object):
-    def __init__(self, mirror=False):
+    def __init__(self, mirror: bool=False):
 
         # The serial ports
         self.ssc = None
 
         # A dictionary mapping names to servo outputs
-        self.outputs = {
+        self.outputs : Dict[str, Output] = {
             # BROW MOVEMENTS
             "CENTER_BROW": SSC32Output(1, default=1550, min=2025, max=1175),
             "INNER_BROW_RIGHT": SSC32Output(2, default=1750, min=2225, max=1450),
@@ -185,11 +196,15 @@ class Charles(object):
             print(e)
             raise
 
-    def is_moving(self):
+    def is_moving(self) -> bool:
         """
         Are any of the servos moving?
         """
         # The SSC32 gives a response for the whole board.
+
+        if self.ssc is None:
+            raise RuntimeError("SSC not yet assigned")
+
         if not self.ssc.is_done():
             return True
 
@@ -199,7 +214,7 @@ class Charles(object):
 
         return False
 
-    def wait_until_still(self):
+    def wait_until_still(self) -> None:
         while self.is_moving():
             sleep(0.1)
 
