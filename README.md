@@ -61,7 +61,9 @@ Once you have the software, the sequence for getting going on a new machine is r
 * Make sure that the serial drivers are working (e.g. by checking them in Device Manager).  Install necessary drivers if not. 
 * Put the serial port details into `charles.py`
 
-You can run 'charles.py' and you should see some basic movements.  If you have the jupyter notebook system installed, there's also a CharlesPlay notebook here which will let you control individual servos.
+**You can run 'charles.py' and you should see some basic movements.**  If you see obscure messages about reading invalid bytes, the first thing to check is whether Charles has power, is switched on, and whether the serial configuration is correct.  You may see a green glow from an LED in the back of his head when power is applied.
+
+If you have the Jupyter notebook system installed, there's also a CharlesPlay notebook here which will let you control individual servos.
 
 To get Charles to mimic you, you need FaceLandmarkVidZmq, which you may need to build for your platform. (See the standard instructions on the OpenFace wiki.) Then:
 
