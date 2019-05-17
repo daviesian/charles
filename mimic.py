@@ -178,9 +178,12 @@ if len(sys.argv) > 1:
 # Values consist of GLOBAL values (lists of floats)
 # and AU values (dicts mapping AU names to floats)
 # They are packed into a dict indexed by 'GLOBAL' or 'AU'.
-# This is rather messy!  But let's see if we can type-check it.
+# This is rather messy, and I wouldn't do it that way.
+# The type-checker gets confused if you do:
+#   ValList = Union[ List[float], Dict[str, float] ]
+# so I just simplify it to:
 
-ValList = Union[List[float], Dict[str, float]]
+ValList = Union[list, dict]
 ValMap = Dict[str, ValList]
 
 current_vals: ValMap = {}
@@ -218,5 +221,5 @@ while True:
     if reset:
         inputs["EULER_X"].min = current_vals["GLOBAL"][1] - inputs["EULER_X"].range / 2
         inputs["EULER_X"].max = current_vals["GLOBAL"][1] + inputs["EULER_X"].range / 2
-        reset = False
+        reset = False 
 

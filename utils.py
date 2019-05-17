@@ -23,8 +23,9 @@ class Input(object):
         if center is not None and range is not None and min is None and max is None:
             min = center - range * 0.5
             max = center + range * 0.5
+            self.range: float = range
         elif min is not None and max is not None and range is None and center is None:
-            pass
+            self.range: float = max - min
         else:
             raise Exception("Must specify min,max or center,range.")
 
@@ -34,7 +35,6 @@ class Input(object):
         self.min = min
         self.max = max
         self.expand = expand
-        self.range = range
 
     def is_available(self, input_maps: Dict[str, Any]):
         return self.map in input_maps
